@@ -1,0 +1,43 @@
+{
+  "shape": {
+    "bh": 256,
+    "n": 2048,
+    "d": 128,
+    "block_n": 64
+  },
+  "tau": 4.0,
+  "correctness_relerr": 0.00028957994422319967,
+  "rows": [
+    {
+      "target_sparsity": 0.0,
+      "dense_ms": 0.6164,
+      "skip_ms": 0.6156,
+      "speedup": 1.001
+    },
+    {
+      "target_sparsity": 0.25,
+      "dense_ms": 0.6135,
+      "skip_ms": 0.5472,
+      "speedup": 1.121
+    },
+    {
+      "target_sparsity": 0.5,
+      "dense_ms": 0.6129,
+      "skip_ms": 0.4621,
+      "speedup": 1.326
+    },
+    {
+      "target_sparsity": 0.75,
+      "dense_ms": 0.6129,
+      "skip_ms": 0.3676,
+      "speedup": 1.667
+    },
+    {
+      "target_sparsity": 0.9,
+      "dense_ms": 0.6127,
+      "skip_ms": 0.3503,
+      "speedup": 1.749
+    }
+  ],
+  "gpu": "NVIDIA GeForce RTX 3090"
+}

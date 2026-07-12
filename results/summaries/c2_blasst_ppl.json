@@ -1,0 +1,29 @@
+{
+  "model": "meta-llama/Llama-3.1-8B-Instruct",
+  "block_n": 64,
+  "seq": 1024,
+  "chunks": 8,
+  "dense_ppl": 9.464,
+  "rows": [
+    {
+      "tau": "inf(dense)",
+      "ppl": 9.464,
+      "delta_ppl": 0.0
+    },
+    {
+      "tau": 8.0,
+      "ppl": 9.4634,
+      "delta_ppl": -0.0006
+    },
+    {
+      "tau": 6.0,
+      "ppl": 9.4634,
+      "delta_ppl": -0.0006
+    },
+    {
+      "tau": 4.0,
+      "ppl": 9.5973,
+      "delta_ppl": 0.1333
+    }
+  ]
+}

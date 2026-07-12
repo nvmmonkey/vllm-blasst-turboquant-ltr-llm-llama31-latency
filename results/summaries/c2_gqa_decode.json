@@ -1,0 +1,28 @@
+{
+  "model": "meta-llama/Llama-3.1-8B-Instruct",
+  "layer": 16,
+  "seq": 1322,
+  "block_n": 64,
+  "queries_per_kv": 4,
+  "kv_heads": 8,
+  "rows": [
+    {
+      "tau": 4.0,
+      "perhead_sparsity": 0.7351,
+      "gqa_group_sparsity": 0.5478,
+      "retained_frac": 0.745
+    },
+    {
+      "tau": 6.0,
+      "perhead_sparsity": 0.4211,
+      "gqa_group_sparsity": 0.1848,
+      "retained_frac": 0.439
+    },
+    {
+      "tau": 8.0,
+      "perhead_sparsity": 0.0924,
+      "gqa_group_sparsity": 0.0119,
+      "retained_frac": 0.129
+    }
+  ]
+}

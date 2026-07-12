@@ -1,0 +1,58 @@
+{
+  "model": "meta-llama/Llama-3.1-8B-Instruct",
+  "layer": 16,
+  "seq": 1536,
+  "block_n": 64,
+  "block_m": 16,
+  "rows": [
+    {
+      "tau": 2.0,
+      "perquery_sparsity": 0.8648,
+      "perquery_relerr": 0.32135,
+      "blockuniform_sparsity": 0.6696,
+      "blockuniform_relerr": 0.14623
+    },
+    {
+      "tau": 4.0,
+      "perquery_sparsity": 0.7247,
+      "perquery_relerr": 0.12109,
+      "blockuniform_sparsity": 0.3379,
+      "blockuniform_relerr": 0.04153
+    },
+    {
+      "tau": 6.0,
+      "perquery_sparsity": 0.4232,
+      "perquery_relerr": 0.03213,
+      "blockuniform_sparsity": 0.0666,
+      "blockuniform_relerr": 0.00579
+    },
+    {
+      "tau": 8.0,
+      "perquery_sparsity": 0.103,
+      "perquery_relerr": 0.00382,
+      "blockuniform_sparsity": 0.0009,
+      "blockuniform_relerr": 5e-05
+    },
+    {
+      "tau": 10.0,
+      "perquery_sparsity": 0.0045,
+      "perquery_relerr": 6e-05,
+      "blockuniform_sparsity": 0.0,
+      "blockuniform_relerr": 0.0
+    },
+    {
+      "tau": 12.0,
+      "perquery_sparsity": 0.0001,
+      "perquery_relerr": 0.0,
+      "blockuniform_sparsity": 0.0,
+      "blockuniform_relerr": 0.0
+    },
+    {
+      "tau": 16.0,
+      "perquery_sparsity": 0.0,
+      "perquery_relerr": 0.0,
+      "blockuniform_sparsity": 0.0,
+      "blockuniform_relerr": 0.0
+    }
+  ]
+}
