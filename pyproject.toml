@@ -1,0 +1,80 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kvcache-latency"
+version = "0.1.0"
+description = "KVCache-Coordinated Latency Optimization — LTR baseline + C1 (TurboQuant) + C2 (BLASST) KV layer"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name = "Guoliang Liu" },
+  { name = "Wenhui Kang" },
+  { name = "Junpeng Huang" },
+]
+
+# Core = the engine-agnostic benchmark harness (Track C). Deliberately
+# CPU-light: no torch / vllm here, so CI and dataset/metrics work install
+# fast on a CPU-only runner. The serving engine and ranker training pull
+# their heavy deps via the extras below.
+dependencies = [
+  "numpy>=1.26",
+  "pyyaml>=6.0",
+  "aiohttp>=3.9",
+  "datasets>=2.19",
+  "transformers>=4.44",
+  "huggingface-hub>=0.24",
+  "matplotlib>=3.8",
+  "pandas>=2.0",
+  "tqdm>=4.66",
+]
+
+[project.optional-dependencies]
+# Dev tooling for CPU-only CI (lint + test).
+dev = [
+  "pytest>=8.0",
+  "pytest-asyncio>=0.23",
+  "ruff>=0.6",
+]
+# The serving engine — installed only on the GPU host (B0/B1 launch).
+serve = [
+  "vllm>=0.6",
+]
+# LTR ranker training/eval helpers (Track B). torch/transformers arrive
+# with the serve extra or vllm; these are the extra bits the ranker needs.
+ltr = [
+  "accelerate>=0.30",
+  "scikit-learn>=1.4",
+]
+
+[project.scripts]
+kv-sweep = "bench.run_sweep:main"
+
+[tool.setuptools]
+packages = ["bench", "c2", "ltr", "ltr.quant", "ltr.ranker", "ltr.scheduler"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+asyncio_mode = "auto"
+markers = [
+  "gpu: test requires a CUDA GPU and a live vLLM server (skipped when unavailable)",
+  "slow: long-running test (deselect with -m 'not slow')",
+]
+filterwarnings = [
+  "ignore::DeprecationWarning",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = ["ltr/vendor"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B", "C4"]
+ignore = ["E501"]  # long lines tolerated (tables, URLs); formatter handles most
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011"]

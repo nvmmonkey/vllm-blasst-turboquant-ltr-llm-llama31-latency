@@ -1,0 +1,79 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+.eggs/
+build/
+dist/
+.Python
+
+# --- Virtual environments ---
+.venv/
+venv/
+env.bak/
+.python-version
+
+# --- Package manager / tooling caches ---
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.uv/
+uv.lock  # regenerated; keep pyproject as source of truth for this milestone
+
+# --- Secrets / local overrides ---
+.env
+*.local.env
+env/*.local.env
+.hf_token
+secrets/
+
+# --- Experiment outputs ---
+# Large raw run artifacts are NOT committed; only results/summaries/ is.
+results/raw/
+*.log
+!results/summaries/.gitkeep
+
+# --- Models / datasets (downloaded to HF cache outside the repo, but guard against local copies) ---
+models/
+*.safetensors
+*.bin
+*.gguf
+*.pt
+.cache/
+# Trained ranker: keep the metadata (loss curve), not the ~0.5 GB weights/tokenizer blobs
+results/ranker/**/tokenizer.json
+results/ranker/**/vocab.json
+results/ranker/**/merges.txt
+results/ranker/**/tokenizer_config.json
+results/ranker/**/special_tokens_map.json
+# superseded 5-epoch intermediate (final ranker is opt125m-ltr, 10 epochs)
+results/ranker/opt125m-ltr-ep5/
+# Synthesized label files embed RAW LMSYS-Chat-1M prompts (unfiltered — some
+# toxic/harmful/NSFW). NEVER commit; regenerate via `python -m ltr.ranker.synthesize`.
+results/ranker/lengths_*.json
+results/ranker/**/labels*.json
+!results/ranker/**/ranker_meta.json
+
+# --- Editor / OS ---
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# vendored reference stack (clone locally, do not commit the fork)
+ltr/vendor/vllm-ltr/
+
+# Copyrighted third-party papers — NOT redistributed in the public repo (kept
+# locally). The group's OWN summaries/notes/presentation/proposal ARE published.
+literature/pdfs/
+literature/text/
+literature/original-paper/
+
+# vendored TurboQuant reference (clone locally, do not commit)
+ltr/vendor/turboquant_plus/
+
+ltr/vendor/vllm-turboquant/
+
+# isolated venv for the v1-fp8 C1 experiment (stable CUDA 12.x)
+.venv-v1fp8/

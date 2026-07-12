@@ -1,0 +1,30 @@
+# Single source of truth for the experimental model + sampling.
+# B0, B1, and the later C-tiers all serve THIS model with THESE settings so
+# every result is apples-to-apples. Serve scripts read the mirrored knobs from
+# env/*.env; the harness reads model/sampling/seed from here.
+
+model: meta-llama/Llama-3.1-8B-Instruct
+dtype: float16          # FP16 per the prior FDU paper (~16 GB weights)
+max_model_len: 8192
+seed: 0
+
+sampling:
+  temperature: 0.0      # greedy -> reproducible outputs across configs
+  top_p: 1.0
+  max_tokens: 256
+  ignore_eos: false     # set true for controlled equal-length load (isolates scheduling)
+
+hardware:
+  platform: "1x NVIDIA RTX 3090 24GB (WSL2)"    # every result in this repo is measured here
+  future_target: "1x NVIDIA A100 40GB"          # optional native-scale re-run (docs/BENCHMARK.md)
+
+workload:
+  dataset: lmsys/lmsys-chat-1m                   # gated on HF
+  request_rates: [5, 10, 20, 30, 40, 50, 60]     # req/s sweep
+  n_requests: 500
+  warmup: 16
+
+# Fast local smoke profile (open model, no gated download, fits any GPU):
+smoke:
+  model: Qwen/Qwen2.5-0.5B-Instruct
+  max_model_len: 4096
