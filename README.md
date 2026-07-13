@@ -59,8 +59,7 @@ a lever that *doesn't* help in a regime is reported as a finding, not hidden.
 - **Accuracy is preserved.** GSM8K: bf16 0.80 vs TurboQuant-4bit 0.83 (Δ within noise); BLASST
   at τ=6 is perplexity-lossless. The C1+C2 latency wins are essentially free on quality.
 
-Full tables, percentiles, ablations, and the honest negatives live in **`results/RESULTS.md`**
-and the standalone report **`results/report.html`**.
+Full tables, percentiles, ablations, and the honest negatives live in **`results/RESULTS.md`**.
 
 ## Repository layout
 
@@ -73,7 +72,7 @@ serving/   launch + benchmark drivers
            ├── bench_reference.sh              0.4.1 swap-stack 2.1× reproduction
            ├── v025_smoke/                     C1 native TurboQuant on vLLM 0.25 (V1)
            └── v025_blasst/                    C2 runtime kernel patch (sitecustomize) + serving drivers
-results/   summaries/ (per-config JSON) · RESULTS.md · report.html · ranker_meta
+results/   summaries/ (per-config JSON) · RESULTS.md · ranker_meta
 tests/     CPU unit tests (loadgen, datasets, metrics, ranker, scheduler)
 docs/      RUNBOOK (3090/WSL2 run guide) · BENCHMARK (optional A100 recipe) · C2_BLASST_PLAN · C_TIERS · REFERENCES
 ```
@@ -89,12 +88,13 @@ vLLM 0.25:
 serving/v025_blasst/c2_serving_tq4.sh
 # 3. baselines (B0/B1, both backends) + GSM8K quality:
 serving/v025_blasst/b0_and_quality.sh
-# summaries land in results/summaries/ ; the report is results/report.html
+# summaries land in results/summaries/ ; full results in results/RESULTS.md
 ```
 
 External (not committed — clone/build locally): the vendored vLLM forks (`ltr/vendor/`, see
-`ltr/vendor/PATCHES.md`), the `.venv-v025` environment, and the ranker weights under
-`results/ranker/` (`ranker_meta.json` is committed).
+`ltr/vendor/PATCHES.md`) and the `.venv-v025` environment. The trained OPT-125M LTR ranker is
+published on Hugging Face — **[nvmmonkey/opt125m-ltr-ranker](https://huggingface.co/nvmmonkey/opt125m-ltr-ranker)**
+— so B1 runs without retraining (`ranker_meta.json` is committed for reference).
 
 ## Contributors
 
