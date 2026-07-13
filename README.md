@@ -94,7 +94,7 @@ serving/v025_blasst/b0_and_quality.sh
 External (not committed — clone/build locally): the vendored vLLM forks (`ltr/vendor/`, see
 `ltr/vendor/PATCHES.md`) and the `.venv-v025` environment. The trained OPT-125M LTR ranker is
 published on Hugging Face — **[nvmmonkey/opt125m-ltr-ranker](https://huggingface.co/nvmmonkey/opt125m-ltr-ranker)**
-— so B1 runs without retraining (`ranker_meta.json` is committed for reference).
+— so B1 runs without retraining (`ranker_meta.json` is committed for reference). The target-sampled output-length labels are on Hugging Face too — **[nvmmonkey/llama31-8b-output-lengths](https://huggingface.co/datasets/nvmmonkey/llama31-8b-output-lengths)** (LMSYS prompts withheld per license).
 
 ## Contributors
 
