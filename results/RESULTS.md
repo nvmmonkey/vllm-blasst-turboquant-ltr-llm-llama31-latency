@@ -1,8 +1,9 @@
 # Results — config ladder record
 
 Human-readable record of every run. Raw per-config data lives in
-`results/summaries/<config>.json` (all rates, one file) + `<config>_sweep.csv`;
-per-rate detail in `results/raw/<config>/` (git-ignored). This file is updated
+`results/summaries/<config>.json` (all rates, one file; the `<config>_sweep.csv` is
+produced at runtime, not committed); per-rate detail in `results/raw/<config>/`
+(git-ignored). This file is updated
 as each step completes.
 
 ## Setup
@@ -27,7 +28,9 @@ as each step completes.
 > change any number or conclusion below: the "recompute stack" is genuinely recompute
 > (preemptions are logged as `PreemptionMode.RECOMPUTE`), so the swap-vs-recompute
 > cross-stack story stands — only the *engine label* is corrected from "V1" to "0.8.5 V0".
-> (The earlier "vLLM 0.24.0" was a typo; 0.24.0 is not a real vLLM version.) Details:
+> **The real V1 engine _did_ run — but only on vLLM 0.25 (the native-TurboQuant stack,
+> §C1-native), a _different_ stack; so every "v1 recompute" table below is 0.8.5-V0, not
+> v0.25.** (The earlier "vLLM 0.24.0" was a typo; 0.24.0 is not a real vLLM version.) Details:
 > `docs/C2_BLASST_PLAN.md §9.1`.
 
 ## Ladder status
@@ -424,7 +427,7 @@ The **authoritative** ladder. One client (`bench.run_sweep`), one workload
 per-request *fixed real length* so LTR has a spread to reorder yet the load is
 model-independent/fp8-fair; cap 4096 → 0 % truncation), the full
 metric set, swept 4/8/16/32/64 req/s. B0 = FCFS/fp16; B1(a) = LTR + fp16; C1 =
-LTR + **fp8 KV**. Figures: `results/summaries/fig_{04stack,v1stack,xstack}_*.png`.
+LTR + **fp8 KV**. (Figures regenerate from the committed summaries via `bench.plots`.)
 
 > **Terminology (per `docs/C_TIERS.md` §1).** "C1" in every *latency* table below is
 > **fp8 KV — the *naive-quant baseline***, used as a **conservative proxy** for C1's
@@ -920,7 +923,7 @@ trend; the full distribution tells more:
 | B1a opt+swap | 354 | 560 | 2340 | 11489 | 17204 | 3160 |
 | C1 opt+swap+fp8 | 343 | **497** | **1559** | **1957** | **2880** | **925** |
 
-| v1 recompute @ r64 | p25 | p50 | p75 | p90 | p99 | mean |
+| 0.8.5 recompute (V0) @ r64 | p25 | p50 | p75 | p90 | p99 | mean |
 |---|---:|---:|---:|---:|---:|---:|
 | B0 fcfs | 370 | 1308 | 14979 | 16358 | 18654 | 5076 |
 | B1 LTR | 379 | 1119 | 1386 | 1873 | **13399** | 1423 |
@@ -929,18 +932,41 @@ trend; the full distribution tells more:
 Three things **p99-alone hides**: (1) **p25 is config-independent (~305–379)** — the
 fastest quartile gets first token fast regardless of scheduling/quant; (2) **B0 is
 bimodal** (p50 814 but p75 12771 — half fast, half HOL-blocked); (3) **C1 compresses
-the WHOLE tail** (p75/p90/p99 all drop), not just p99. On v1 the sharpest insight:
-**B1 (LTR) has great p50–p90 (1119–1873) but p99 explodes to 13399** — SJF starves
-long requests, which v1 recomputes; **C1 rescues p99 to 1538 (8.7×)** and zeros
+the WHOLE tail** (p75/p90/p99 all drop), not just p99. On the 0.8.5 stack the sharpest
+insight: **B1 (LTR) has great p50–p90 (1119–1873) but p99 explodes to 13399** — SJF starves
+long requests, which 0.8.5 recomputes; **C1 rescues p99 to 1538 (8.7×)** and zeros
 preemptions. *Honest caveat:* absolute TTFT has **~15 % run-to-run variance** (fixed
 seed, non-deterministic server/swap timing); the relative ladder and **medians** are
 the robust readouts.
+
+**Both grids above are the fp8-proxy stacks** (C1 = fp8 KV on 0.4.1-swap / 0.8.5-recompute-V0).
+For the **real V1 — vLLM 0.25 native TurboQuant** — the B0/B1/C1/ctrl percentiles are in
+§C1-native above (C1 TQ4 p99 **4323** vs B1 **26210**); here we add the **C2 (BLASST)** isolation
+the TTFT-only grids can't show. C2 is a *decode/TPOT* lever, but its faster decode drains the
+queue, so it moves TTFT too — we record **both**, on the controlled `c1_tq4` (τ=0) vs `c1c2_tq4`
+(τ=6) pair (same run, so the delta is pure C2):
+
+| v0.25 TQ4 · **TTFT** (ms) @ r64 | p25 | p50 | p75 | p90 | p99 | mean |
+|---|---:|---:|---:|---:|---:|---:|
+| LTR+C1 (τ=0) | 1422 | 2101 | 3078 | 4186 | 6323 | 2347 |
+| **LTR+C1+C2** (τ=6) | **1203** | **1509** | **1990** | **3319** | **5351** | **1747** |
+
+| v0.25 TQ4 · **TPOT** (ms/tok) @ r64 — C2's home turf | p25 | p50 | p75 | p90 | p99 | mean |
+|---|---:|---:|---:|---:|---:|---:|
+| LTR+C1 (τ=0) | 118.6 | 138.5 | 202.2 | 374.6 | 1121 | 214.7 |
+| **LTR+C1+C2** (τ=6) | **100.5** | **119.1** | **169.0** | **290.1** | **597** | **167.3** |
+
+**C2 (BLASST) on the per-head TurboQuant kernel: TPOT mean −22 % (214.7→167.3), p99 −47 %
+(1121→597)** — it skips softmax + the value dequant. And because faster decode empties the queue,
+**it also cuts TTFT: mean −26 % (2347→1747), p99 −15 % (6323→5351)** — so the full-stack
+LTR+C1+C2 TTFT is on record, not just TPOT. (On the bf16/unified GQA kernel the sign flips to
++4.5 % TPOT — the CTA-uniform tile tax; see §C2 sign-flip.)
 
 ### ShareGPT Nlatency ladder (paper's metric, rate 2–60) — answers "why only 2/4/8?"
 The original Nlatency table stopped at 2/4/8 because the 3090, on the paper's
 **long ShareGPT trace**, saturates at rate ~8 (small KV pool); the paper's 30–60 is
 the **A100's** saturation range. Re-run to the paper's full 5–60 window (fixed 200
-prompts/rate; `reference_ladder.json`, `fig_ladder_nlatency.png`):
+prompts/rate; `reference_ladder.json`):
 
 | Mean Nlatency (ms/token) | r2 | r4 | r8 | r16 | r32 | r60 |
 |---|---:|---:|---:|---:|---:|---:|
